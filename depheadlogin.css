@@ -1,0 +1,124 @@
+/* depheadlogin.css - النسخة المعدلة بارتفاع أكبر للشريط */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #003366;
+    color: white;
+    padding: 25px 0;
+    /* زيادة الارتفاع من 15px إلى 25px */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.header-link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    margin-right: 30px;
+    /* مسافة من الحافة اليمنى */
+    padding: 8px 15px;
+    border: 1px solid white;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    margin-left: 800px;
+}
+
+.header-link:hover {
+    background-color: rgb(5 20 71);
+    box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+
+.university-header {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    margin: 0;
+
+    /* لتوزيع العناصر بشكل متساو */
+    width: 100%;
+}
+
+.logo {
+    height: 80px;
+    /* زيادة حجم الشعار من 60px إلى 80px */
+    margin-right: 20px;
+}
+
+.university-info h1 {
+    margin: 0;
+    font-size: 28px;
+    /* زيادة حجم الخط من 24px إلى 28px */
+}
+
+.university-info h2 {
+    margin: 8px 0 0;
+    /* زيادة الهامش العلوي من 5px إلى 8px */
+    font-size: 20px;
+    /* زيادة حجم الخط من 18px إلى 20px */
+    font-weight: normal;
+}
+
+/* بقية الأكواد تبقى كما هي */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #003366;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #003366;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+    background-color: #002244;
+}
+
+.error-message {
+    color: #d9534f;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}

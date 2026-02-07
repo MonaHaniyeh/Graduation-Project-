@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Course Conflicts</title>
+  <link rel="stylesheet" href="check_conflict.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="conflicts.css">
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="title" id="conflict-title"></h2>
+
+    <!-- Course Information Display -->
+    <div class="course-info-container">
+      <div class="course-info-card">
+        <h3><i class="fas fa-book-open"></i> Selected Course 1:</h3>
+        <p id="course1-display"></p>
+      </div>
+      <div class="course-info-card">
+        <h3><i class="fas fa-book-open"></i> Selected Course 2:</h3>
+        <p id="course2-display"></p>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="conflict-table" id="conflict-table">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th id="table-header-course1">Course 1</th>
+            <th id="table-header-course2">Course 2</th>
+          </tr>
+        </thead>
+        <tbody id="conflict-tbody">
+          <!-- Rows will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+    <div class="conflict-summary" id="conflict-summary"></div>
+    <div class="conflict-actions">
+      <a href="AddExam.html" class="add-exam-btn button" role="button"><i class="fas fa-plus-circle"></i> Add Exam</a>
+      <button class="cancel-btn" id="cancel-btn"><i class="fas fa-arrow-left"></i> Cancel</button>
+    </div>
+  </div>
+  <script>
+    console.log("Conflict page script started.");
+
+    // Get course IDs from URL
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+    const course1 = getQueryParam('course1');
+    const course2 = getQueryParam('course2');
+
+    console.log("Course 1 ID:", course1, "Course 2 ID:", course2);
+
+    // Fetch course names and students with conflicts
+    const formData = new FormData();
+    formData.append('course1', course1); // Use the 'course1' variable from getQueryParam
+    formData.append('course2', course2); // Use the 'course2' variable from getQueryParam
+
+    // Ensure your PHP script is named 'conflicts.php' if you use that here,
+    // or 'get_conflicts.php' if that's the actual filename.
+    // Based on your previous interactions, it seems the PHP script is conflicts.php
+
+    if (!course1 || !course2) {
+      console.error("Course IDs are missing from URL.");
+      document.getElementById('conflict-summary').textContent = 'Error: Course IDs are missing. Please go back and select courses again.';
+      document.getElementById('conflict-title').textContent = 'Error: Missing Course Information';
+    } else {
+      // Based on your previous interactions, it seems the PHP script is conflicts.php
+      fetch('conflicts.php', { // Or 'get_conflicts.php' if that's the correct filename
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            // Try to get more info for non-OK responses
+            return response.text().then(text => { // Changed res to response
+              throw new Error(`Server responded with ${response.status}: ${text}`);
+            });
+          }
+          return response.json(); // Changed res to response
+        })
+        .then(data => {
+          if (data.error) {
+            console.error('Error from server:', data.error);
+            document.getElementById('conflict-summary').textContent = 'Server Error: ' + data.error;
+            document.getElementById('conflict-title').textContent = 'Problem Loading Data';
+            document.getElementById('course1-display').textContent = 'N/A';
+            document.getElementById('course2-display').textContent = 'N/A';
+          } else {
+            // Display course names prominently
+            document.getElementById('course1-display').textContent = data.course1_name || 'Not Available';
+            document.getElementById('course2-display').textContent = data.course2_name || 'Not Available';
+            // document.getElementById('conflict-title').textContent = `Student Registration Status for: ${data.course1_name || 'Course 1'} & ${data.course2_name || 'Course 2'}`;
+
+            // Update table headers with dynamic course names
+            document.getElementById('table-header-course1').textContent = data.course1_name || 'Course 1';
+            document.getElementById('table-header-course2').textContent = data.course2_name || 'Course 2';
+
+            // Fill table with student data
+            const tbody = document.getElementById('conflict-tbody');
+            tbody.innerHTML = ''; // Clear previous content
+            let studentsListedCount = 0;
+            let studentsInBothCount = 0;
+
+            (data.students || []).forEach(student => {
+              studentsListedCount++;
+              if (student.course1_registered && student.course2_registered) {
+                studentsInBothCount++;
+              }
+
+              tbody.innerHTML += `
+                <tr>
+                  <td>${student.StudentID}</td>
+                  <td>${student.StudentName}</td>
+                  <td>${student.course1_registered ? 'Registered' : ''}</td>
+                  <td>${student.course2_registered ? 'Registered' : ''}</td>
+                </tr>
+              `;
+            });
+
+            if (studentsListedCount === 0) {
+              tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No students found registered in either of the selected courses.</td></tr>`;
+            }
+            document.getElementById('conflict-summary').textContent = `The Number of students registered in both selected courses: ${studentsInBothCount}.`;
+
+            // If no students are registered in both courses, store the course pair as non-conflicting.
+            if (studentsInBothCount === 0) {
+              const nonConflictingData = {
+                course1_id: course1, // from getQueryParam
+                course2_id: course2 // from getQueryParam
+                // students: data.students // Removed, as this request focuses on the course pair for the non-conflicting table
+              };
+
+              fetch('store_non_conflicting.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(nonConflictingData)
+              })
+                .then(response => {
+                  if (!response.ok) {
+                    return response.text().then(text => {
+                      throw new Error(`store_non_conflicting.php responded with ${response.status}: ${text}`);
+                    });
+                  }
+                  return response.json();
+                })
+                .then(storeResult => {
+                  if (storeResult.success) {
+                    console.log('Successfully stored non-conflicting student data:', storeResult.message);
+                  } else {
+                    console.error('Failed to store non-conflicting student data:', storeResult.message || 'Unknown error from server.');
+                  }
+                })
+                .catch(error => {
+                  console.error('Error calling store_non_conflicting.php:', error.message);
+                });
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching conflict data:', error);
+          document.getElementById('conflict-summary').textContent =
+            'Error loading conflict data. Please try again. Details: ' + error.message;
+          document.getElementById('conflict-title').textContent = 'Error Loading Data';
+          document.getElementById('course1-display').textContent = 'Error';
+          document.getElementById('course2-display').textContent = 'Error';
+        });
+    }
+
+    // Cancel button returns to previous page
+    document.getElementById('cancel-btn').onclick = function () {
+      window.location.href = 'check_conflict.html';
+    };
+  </script>
+</body>
+
+</html>

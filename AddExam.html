@@ -1,0 +1,718 @@
+<!-- AddExam.html -->
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="AddExam.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* AddExam.css */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e6e9ff;
+            --primary-dark: #2c3e50;
+            --secondary: #2c3e50;
+            --accent: #4895ef;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+
+
+
+
+
+        .header-links {
+            display: flex;
+            gap: 25px;
+            margin-top: 30px;
+            color: #e0e0e0;
+
+        }
+
+        .header-link {
+
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+
+            padding: 8px 12px;
+            border-radius: var(--border-radius-sm);
+        }
+
+
+
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--box-shadow-lg);
+            transform: translateY(-5px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header h2 i {
+            margin-right: 12px;
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        /* Elegant Table Styles */
+        .elegant-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 15px;
+        }
+
+        .elegant-table thead th {
+            background-color: var(--primary);
+            color: white;
+            padding: 16px 20px;
+            font-weight: 500;
+            text-align: left;
+            border: none;
+            position: sticky;
+            top: 0;
+        }
+
+        .elegant-table thead th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .elegant-table thead th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .elegant-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .elegant-table tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .elegant-table tbody tr:hover {
+            background-color: var(--primary-light);
+        }
+
+        .elegant-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
+        }
+
+        .elegant-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background-color: rgba(76, 201, 240, 0.15);
+            color: var(--success);
+        }
+
+        .status-badge.inactive {
+            background-color: rgba(108, 117, 125, 0.15);
+            color: var(--gray);
+        }
+
+        /* Exam Card Styles */
+        .exam-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            border-top: 4px solid transparent;
+        }
+
+        .exam-card:hover {
+            box-shadow: var(--box-shadow-lg);
+            transform: translateY(-5px);
+        }
+
+        .exam-card-1 {
+            border-top-color: var(--primary);
+        }
+
+        .exam-card-2 {
+            border-top-color: var(--accent);
+        }
+
+        .exam-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .exam-card .card-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .exam-card .card-header h3 i {
+            margin-right: 12px;
+        }
+
+        .exam-card-1 .card-header h3 i {
+            color: var(--primary);
+        }
+
+        .exam-card-2 .card-header h3 i {
+            color: var(--accent);
+        }
+
+        .exam-card .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .exam-card-1 .card-icon {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .exam-card-2 .card-icon {
+            background-color: rgba(72, 149, 239, 0.15);
+            color: var(--accent);
+        }
+
+        .exam-card .card-body {
+            padding: 25px;
+        }
+
+        .exam-details-section {
+            padding: 20px;
+        }
+
+        .exam-details-section h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .exam-details-section i {
+            margin-right: 12px;
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+            margin-top: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+        }
+
+        .form-group label i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .exam-card-1 .form-group label i {
+            color: var(--primary);
+        }
+
+        .exam-card-2 .form-group label i {
+            color: var(--accent);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius-sm);
+            font-size: 15px;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--gray);
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f1f1f1;
+            color: var(--dark);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-lg {
+            padding: 16px 32px;
+            font-size: 17px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            margin: 0 4px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-edit {
+            background-color: rgba(72, 149, 239, 0.1);
+            color: var(--accent);
+        }
+
+        .btn-edit:hover {
+            background-color: rgba(72, 149, 239, 0.2);
+        }
+
+        .btn-delete {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(247, 37, 133, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        /* أضف في نهاية الملف */
+        #toggleExam2 {
+            margin: 20px auto;
+            display: block;
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: white;
+        }
+
+        #toggleExam2:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .header-links {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 20px 15px;
+            }
+
+            .main-header h1 {
+                font-size: 28px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .elegant-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="header-links">
+                <h1><i class="fas fa-plus-circle"></i> Add New Exams</h1>
+                <div class="left" style="text-decoration: underline;">
+                    <a href="exams_list.php" class="header-link">
+                        <i class="fas fa-calendar-alt"></i> View Exam Schedule
+                    </a>
+                    <a href="check_conflict.html" class="header-link">
+                        <i class="fas fa-home"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Non-Conflicting Courses Table -->
+            <section class="card non-conflicting-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-handshake"></i> Non-Conflicting Courses</h2>
+                    <div class="section-actions">
+
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="elegant-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">ID</th>
+                                <th>First Course</th>
+                                <th>Second Course</th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="nonConflictingTable">
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td>Database Systems</td>
+                                <td>Software Engineering</td>
+
+                            </tr>
+                            <!-- More rows will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Exam Form Section -->
+            <form id="examForm" action="process_exam.php" method="POST">
+                <!-- Common Exam Details -->
+                <section class="card exam-details-section">
+                    <h2><i class="fas fa-calendar-check"></i> Exam Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="examDate"><i class="far fa-calendar"></i> Exam Date</label>
+                            <input type="date" id="examDate" name="examDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="startTime"><i class="far fa-clock"></i> Start Time</label>
+                            <input type="time" id="startTime" name="startTime" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endTime"><i class="far fa-clock"></i> End Time</label>
+                            <input type="time" id="endTime" name="endTime" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="examType"><i class="fas fa-question-circle"></i> Exam Type</label>
+                            <select id="examType" name="examType" required>
+                                <option value="Midterm">Midterm</option>
+                                <option value="Final">Final</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Exam 1 Card -->
+                <section class="exam-card exam-card-1">
+                    <div class="card-header">
+                        <h3><i class="fas fa-book-open"></i> Exam 1 Details</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-1"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="course1"><i class="fas fa-book"></i> Course</label>
+                            <select id="course1" name="course1" required>
+                                <option value="">Select Course...</option>
+                                <!-- Options loaded via JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="instructor1"><i class="fas fa-user-tie"></i> Instructor</label>
+                            <select id="instructor1" name="instructor1" required>
+                                <option value="">Select Instructor...</option>
+                                <!-- Options loaded via JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="classroom1"><i class="fas fa-door-open"></i> Classroom</label>
+                            <select id="classroom1" name="classroom1" required>
+                                <option value="">Select Classroom...</option>
+                                <!-- Options loaded via JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- add section 2-->
+                <div class="form-group" style="margin: 20px 0; text-align: center;">
+                    <button type="button" id="toggleExam2" class="btn btn-secondary">
+                        <i class="fas fa-plus"></i> Add Second Exam
+                    </button>
+                </div>
+
+                <!-- Exam 2 Card -->
+                <section class="exam-card exam-card-2" id="exam2Section" style="display: none;">
+                    <div class=" card-header">
+                        <h3><i class="fas fa-book-open"></i> Exam 2 Details</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-2"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="course2"><i class="fas fa-book"></i> Course</label>
+                            <select id="course2" name="course2">
+                                <option value="">Select Course...</option>
+                                <!-- Options loaded via JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="instructor2"><i class="fas fa-user-tie"></i> Instructor</label>
+                            <select id="instructor2" name="instructor2">
+                                <option value="">Select Instructor...</option>
+                                <!-- Options loaded via JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="classroom2"><i class="fas fa-door-open"></i> Classroom</label>
+                            <select id="classroom2" name="classroom2">
+                                <option value="">Select Classroom...</option>
+                                <!-- Options loaded via JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!--btns-->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Save Exams
+                    </button>
+                    <button type="reset" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-undo"></i> Reset Form
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+    <div id="toastMessage" class="toast-message" hidden>
+        <div class="toast-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-content">
+            <span id="toastText"></span>
+        </div>
+        <div class="toast-progress">hi</div>
+    </div>
+
+    <script>
+
+    </script>
+    <script src="AddExam.js"></script>
+
+</body>
+
+</html>

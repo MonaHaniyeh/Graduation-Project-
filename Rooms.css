@@ -1,0 +1,619 @@
+:root {
+    --primary-color: #4a90e2;
+    --primary-hover-color: #3a7bc8;
+    --danger-color: #dc3545;
+    --danger-hover-color: #c82333;
+    /* --warning-color: #ffc107; */ /* Removed as requested previously */
+    /* --warning-text-color: #5d4a0a; */ /* Removed as requested previously */
+    --success-color: #28a745;
+    --success-hover-color: #218838;
+    --light-bg-color: #f8f9fa;
+    --dark-text-color: #343a40;
+    --light-text-color: #ffffff;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --modal-overlay-color: rgba(0, 0, 0, 0.5);
+    --border-radius: 6px;
+    --transition-speed: 0.3s;
+    --accent-color: #5D9CEC; /* A nice blue, for example */
+    --primary-color-rgb: 74, 144, 226; /* RGB version of primary-color for alpha shadows */
+    --accent-color-rgb: 93, 156, 236; /* RGB version of the accent color for box-shadow alpha */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* Tabs Navigation */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: #4a90e2;
+    color: #fff;
+    width: 100%;
+}
+
+.tab {
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.tab:hover {
+    background-color: #3a7bc8;
+}
+
+.tab.active {
+    background-color: #3a7bc8;
+    border-bottom: 3px solid #f4f4f4;
+}
+
+/* Main Container */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+/* --- Main Content Area --- */
+.content-wrapper {
+    max-width: 900px;
+    margin: 20px auto; /* Adjusted margin */
+    padding: 15px; /* Default padding */
+    background-color: var(--light-text-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    width: calc(100% - 30px); /* Account for padding */
+    box-sizing: border-box;
+}
+
+/* --- Faculty Selector --- */
+.faculty-menu {
+    margin-bottom: 25px; /* Adjusted margin */
+    display: flex;
+    flex-direction: column; /* Stack on small screens */
+    align-items: center;
+    gap: 8px; /* Adjusted gap */
+    justify-content: center;
+}
+
+.faculty-menu label {
+    font-weight: 600;
+    color: var(--dark-text-color);
+    font-size: 0.95rem; /* Adjusted size */
+}
+
+.faculty-menu select {
+    width: 100%; /* Full width on small screens */
+    max-width: 280px; /* Limit width on larger screens */
+    padding: 8px 12px; /* Adjusted padding */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: inset 0 1px 3px var(--shadow-color);
+    font-size: 0.95rem; /* Adjusted size */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23333' d='M1.41 0L6 4.58L10.59 0L12 1.41L6 7.41L0 1.41L1.41 0Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-color: var(--light-text-color);
+    cursor: pointer;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.faculty-menu select:hover {
+    border-color: var(--primary-color);
+}
+
+.faculty-menu select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+}
+
+.faculty-menu option {
+    padding: 8px; /* Adjusted padding */
+}
+
+/* --- Add Room Section --- */
+.add-room-section {
+    text-align: center;
+    margin-bottom: 20px; /* Adjusted margin */
+}
+
+.btn {
+    padding: 8px 16px; /* Adjusted padding */
+    font-size: 0.95rem; /* Adjusted size */
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    color: var(--light-text-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.btn:hover {
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+     transform: translateY(-1px);
+}
+.btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+.btn-primary { background-color: var(--primary-color); }
+.btn-primary:hover { background-color: var(--primary-hover-color); }
+
+.btn-danger { background-color: var(--danger-color); }
+.btn-danger:hover { background-color: var(--danger-hover-color); }
+
+/* .btn-warning removed */
+
+.btn-success { background-color: var(--success-color); }
+.btn-success:hover { background-color: var(--success-hover-color); }
+
+.btn-secondary { background-color: #6c757d; }
+.btn-secondary:hover { background-color: #5a6268; }
+
+/* --- General Form Styling --- */
+form {
+    background: #ffffff; /* Clean white background */
+    border-radius: 8px; /* Rounded corners */
+    padding: 25px 30px; /* Generous padding */
+    width: 100%;
+    max-width: 400px; /* Set a maximum width for forms */
+    margin: 30px auto; /* Center the form with some top/bottom margin */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Softer, more diffused shadow */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    display: none; /* Forms are hidden by default */
+}
+
+/* Optional: Add a subtle hover effect to the form container */
+form:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+form fieldset {
+    border: none; /* Remove default fieldset border */
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr; /* Single column layout */
+    gap: 18px; /* Space between form elements */
+}
+
+form legend {
+    font-size: 1.4rem; /* Refined font size for better proportion */
+    font-weight: 600; /* Semi-bold */
+    color: #4a90e2; /* Primary color for the legend */
+    text-align: left; /* Align to the left for a more standard form look */
+    margin-bottom: 18px; /* Adjusted space below legend and its border */
+    padding-bottom: 12px; /* Adjusted padding below the legend text */
+    border-bottom: 1px solid #ced4da; /* A clean, slightly more visible separator */
+    width: 100%; /* Ensure it spans full width */
+    grid-column: 1 / -1; /* Ensure legend spans full width in the grid */
+    letter-spacing: 0.2px; /* Subtle letter spacing for refinement */
+}
+
+form fieldset > div {
+    position: relative;
+}
+
+form label {
+    display: block;
+    font-size: 0.9rem; /* Slightly smaller label text */
+    color: #495057; /* Standard text color for labels */
+    margin-bottom: 6px; /* Space between label and input */
+    font-weight: 500;
+}
+
+form input[type="text"],
+form input[type="number"] {
+    width: 100%;
+    padding: 10px 12px; /* Comfortable padding */
+    border: 1px solid #ced4da; /* Standard input border color */
+    border-radius: 5px; /* Slightly rounded input fields */
+    font-size: 0.95rem;
+    background-color: #f8f9fa; /* Very light background for inputs */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+form input::placeholder {
+    color: #868e96; /* Softer placeholder text */
+    font-style: italic;
+}
+
+form input[type="text"]:focus,
+form input[type="number"]:focus {
+    outline: none;
+    border-color: #80bdff; /* Highlight color on focus, matches Bootstrap */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Subtle glow, matches Bootstrap */
+    background-color: #ffffff;
+}
+
+/* Specific styling for the submit button within the forms */
+form .btn-primary {
+    width: 100%; /* Full width button */
+    padding: 12px 0; /* Button padding */
+    font-size: 1rem;
+    font-weight: 500;
+    grid-column: 1 / -1; /* Ensure button spans full width in the grid */
+    margin-top: 10px; /* Add some space above the button */
+}
+
+/* --- Styling for the Add Room Form (addRoomForm) --- */
+#addRoomForm {
+    background: #ffffff; /* Clean white background */
+    border-radius: 8px; /* Rounded corners */
+    padding: 25px 30px; /* Generous padding */
+    width: 100%;
+    max-width: 350px; /* Reduced max-width to make the form smaller */
+    margin: 30px auto; /* Center the form with some top/bottom margin */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Softer, more diffused shadow */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+     display: none;
+}
+
+/* Optional: Add a subtle hover effect to the form container */
+#addRoomForm:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+#addRoomForm fieldset {
+    border: none; /* Remove default fieldset border */
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr; /* Single column layout */
+    gap: 18px; /* Space between form elements */
+}
+
+#addRoomForm legend {
+    font-size: 1.4rem; /* Refined font size for better proportion */
+    font-weight: 600; /* Semi-bold */
+    color: var(--dark-text-color); /* Using theme variable for consistency */
+    text-align: left; /* Align to the left for a more standard form look */
+    margin-bottom: 18px; /* Adjusted space below legend and its border */
+    padding-bottom: 12px; /* Adjusted padding below the legend text */
+    border-bottom: 1px solid #ced4da; /* A clean, slightly more visible separator */
+    width: 100%; /* Ensure it spans full width */
+    grid-column: 1 / -1; /* Ensure legend spans full width in the grid */
+    letter-spacing: 0.2px; /* Subtle letter spacing for refinement */
+    color: #4a90e2;
+}
+
+#addRoomForm fieldset > div { /* Targets the div wrappers for label/input pairs */
+    position: relative;
+}
+
+#addRoomForm label {
+    display: block;
+    font-size: 0.9rem; /* Slightly smaller label text */
+    color: #495057; /* Standard text color for labels */
+    margin-bottom: 6px; /* Space between label and input */
+    font-weight: 500;
+}
+
+#addRoomForm input[type="text"],
+#addRoomForm input[type="number"] {
+    width: 100%;
+    padding: 10px 12px; /* Comfortable padding */
+    border: 1px solid #ced4da; /* Standard input border color */
+    border-radius: 5px; /* Slightly rounded input fields */
+    font-size: 0.95rem;
+    background-color: #f8f9fa; /* Very light background for inputs */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+#addRoomForm input::placeholder {
+    color: #868e96; /* Softer placeholder text */
+    font-style: italic;
+}
+
+#addRoomForm input[type="text"]:focus,
+#addRoomForm input[type="number"]:focus {
+    outline: none;
+    border-color: #80bdff; /* Highlight color on focus, matches Bootstrap */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Subtle glow, matches Bootstrap */
+    background-color: #ffffff;
+}
+
+/* Specific styling for the submit button within the form */
+#addRoomForm .btn-primary {
+    width: 100%; /* Full width button */
+    padding: 12px 0; /* Button padding */
+    font-size: 1rem;
+    font-weight: 500;
+    /* It will inherit background, color, border-radius from general .btn-primary */
+    /* Overrides for gradient or specific form button look can go here if desired */
+    /* For example, to keep the gradient from previous thoughts: */
+    /* background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%); */
+    /* box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2); */
+    grid-column: 1 / -1; /* Ensure button spans full width in the grid */
+    margin-top: 10px; /* Add some space above the button */
+}
+
+/* --- Room Table --- */
+table {
+    width: 100%;
+    margin-top: 15px; /* Adjusted margin */
+    border-collapse: collapse;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    font-size: 0.9rem; /* Adjust base table font size */
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 10px 12px; /* Adjusted padding */
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:nth-child(even) {
+    background-color: var(--light-bg-color);
+}
+
+tr:hover {
+    background-color: #e9ecef;
+}
+
+td:last-child { /* Actions column */
+    text-align: center;
+    width: auto; /* Allow width to adjust */
+    min-width: 120px; /* Ensure enough space for both buttons */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center-align buttons horizontally */
+    gap: 10px; /* Add space between buttons */
+}
+
+.delete-button {
+    padding: 6px 12px; /* Adjusted padding */
+    font-size: 0.85rem; /* Adjusted size */
+    background-color: var(--danger-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-button:hover {
+    background-color: var(--danger-hover-color);
+    transform: translateY(-1px);
+}
+
+.delete-button:active {
+    transform: translateY(0);
+}
+
+/* Update Button */
+.update-button {
+    padding: 6px 12px; /* Same padding as delete button */
+    font-size: 0.85rem; /* Same font size as delete button */
+    background-color: #4a90e2; /* Primary color for update button */
+    color: #ffffff;
+    border: none;
+    border-radius: 4px; /* Same border radius as delete button */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.update-button:hover {
+    background-color: #3a7bc8; /* Darker blue on hover */
+    transform: translateY(-1px);
+}
+
+.update-button:active {
+    transform: translateY(0);
+}
+
+/* --- Custom Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--light-text-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: scale(1);
+}
+
+.modal-message {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: var(--dark-text-color);
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.modal-buttons .btn {
+    min-width: 90px;
+    flex-grow: 1;
+    flex-basis: 100px;
+}
+
+/* --- Responsive Adjustments --- */
+
+/* Medium screens (Tablets) */
+@media (min-width: 600px) {
+    .tab {
+        font-size: 1rem;
+    }
+    .content-wrapper {
+        padding: 20px;
+        width: calc(100% - 40px);
+        margin: 30px auto; /* Restore margin */
+    }
+    .faculty-menu {
+        flex-direction: row; /* Horizontal layout */
+        gap: 10px;
+    }
+    .faculty-menu label {
+        font-size: 1rem;
+    }
+    .faculty-menu select {
+        width: 280px; /* Restore specific width */
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+    .add-room-section {
+        margin-bottom: 25px;
+    }
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    #roomForm {
+        margin: 20px auto;
+        padding: 20px;
+    }
+    #roomForm input[type="text"] {
+        padding: 10px;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        width: calc(100% - 22px); /* Restore specific width calc */
+    }
+    table {
+        margin-top: 20px;
+        font-size: 1rem; /* Restore table font size */
+    }
+    th, td {
+        padding: 12px 15px;
+    }
+    .delete-button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    .modal-content {
+        padding: 30px;
+    }
+    .modal-message {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+    .modal-buttons {
+        gap: 15px;
+    }
+    .modal-buttons .btn {
+        min-width: 100px;
+        flex-grow: 0;
+    }
+}
+
+/* Small screens (Mobile) */
+@media (max-width: 480px) {
+    .tab {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+    }
+    .tab i {
+        margin-right: 4px;
+    }
+    .content-wrapper {
+        margin: 10px auto;
+        padding: 10px;
+        width: calc(100% - 20px);
+        box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #addRoomForm {
+        padding: 15px;
+    }
+    #addRoomForm fieldset {
+        padding: 10px;
+    }
+    #addRoomForm legend {
+        font-size: 1.2em;
+    }
+    #addRoomForm label {
+        font-size: 0.9rem;
+    }
+    #roomForm {
+        padding: 10px;
+    }
+    table {
+        font-size: 0.85rem;
+    }
+    th, td {
+        padding: 8px 10px;
+    }
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    .modal-content {
+        padding: 15px;
+    }
+    .modal-message {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+    .tabs .tab {
+        padding: 15px 20px; /* Adjust padding for smaller screens */
+    }
+}
+@media (max-width: 992px) { /* Adjust padding for medium screens */
+    .tabs .tab {
+        padding: 18px 40px; /* Reduced padding for medium screens */
+    }
+}

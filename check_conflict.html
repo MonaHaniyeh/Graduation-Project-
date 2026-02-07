@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Conflict Checker</title>
+  <link rel="stylesheet" href="check_conflict.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="info-card">
+        <i class="fas fa-user-tie icon"></i>
+        <div>
+          <p class="info-label">Department Head</p>
+          <p class="info-text dephead"></p>
+        </div>
+      </div>
+      <div class="info-card">
+        <i class="fas fa-building-columns icon"></i>
+        <div>
+          <p class="info-label">Department</p>
+          <p class="info-text department"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="title">
+      <h1>Check The Conflicts Between :</h1>
+    </div>
+
+    <!-- Course Selection -->
+    <div class="courses">
+      <div class="course-card">
+        <label for="course1"><i class="fas fa-book-open"></i> Course 1</label>
+        <select id="course1">
+          <option value="">Select Course</option>
+        </select>
+      </div>
+      <div class="course-card">
+        <label for="course2"><i class="fas fa-book-open"></i> Course 2</label>
+        <select id="course2">
+          <option value="">Select Course</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Button -->
+    <div class="button-container">
+      <button id="check-conflict-btn"><i class="fas fa-check-circle"></i> Test </button>
+    </div>
+
+    <!-- Message Box (initially hidden, placed inside container for correct appearance) -->
+    <div id="msg-box" style="display:none; max-width: 400px;"></div>
+
+    <!-- Back to Login Icon Link -->
+    <a href="depheadlogin.html" id="back-to-login-btn" title="Back to Login">
+      <i class="fas fa-arrow-left"></i> 
+      <span>Login</span>
+    </a>
+  </div>
+  <script>
+// Fetch department head info from session
+fetch('get_dephead_info.php')
+  .then(res => res.json())
+  .then(info => {
+    if (info.error) {
+      window.location.href = 'depheadlogin.html?error=not_logged_in';
+      return;
+    }
+
+    // Set department head and department name in the header
+    document.querySelector('.info-text.dephead').textContent = info.dephead_name;
+    document.querySelector('.info-text.department').textContent = info.department_name;
+
+    // Fetch only courses for this department and department head
+    fetch(`check_conflict.php?DeptHeadID=${encodeURIComponent(info.dephead_id)}&DepartmentID=${encodeURIComponent(info.department_id)}`)
+      .then(res => res.json())
+      .then(data => {
+        const select1 = document.getElementById('course1');
+        const select2 = document.getElementById('course2');
+        select1.innerHTML = '<option value="">Select Course</option>';
+        select2.innerHTML = '<option value="">Select Course</option>';
+        data.courses.forEach(course => {
+          const opt1 = document.createElement('option');
+          opt1.value = course.id;
+          opt1.textContent = course.name;
+          select1.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = course.id;
+          opt2.textContent = course.name;
+          select2.appendChild(opt2);
+        });
+
+        // One-sided comparison: When Course 1 is selected, remove it from Course 2 options
+        select1.onchange = function() {
+          const selected1 = select1.value;
+          Array.from(select2.options).forEach(opt => {
+            opt.disabled = (opt.value === selected1 && opt.value !== "");
+          });
+          if (select2.value === selected1) select2.value = "";
+        };
+      });
+  });
+
+document.getElementById('check-conflict-btn').onclick = function() {
+  const c1 = document.getElementById('course1').value;
+  const c2 = document.getElementById('course2').value;
+  if (!c1 || !c2) {
+    showMessageBox('Please select both courses.');
+    return;
+  }
+  if (c1 === c2) {
+    showMessageBox('Please select two different courses.');
+    return;
+  }
+  window.location.href = `conflicts.html?course1=${encodeURIComponent(c1)}&course2=${encodeURIComponent(c2)}`;
+};
+
+// Function to show a styled message box
+function showMessageBox(message) {
+  let box = document.getElementById('msg-box');
+  box.innerHTML = `
+    <span style="
+      display:inline-flex;
+      align-items:center;
+      gap:0.8em;
+      font-size:1.18em;
+      ">
+      <i class="fas fa-exclamation-triangle msg-animate" style="color:#D32F2F;font-size:1.5em;transition:transform 0.2s ease-out;"></i>
+      <span>${message}</span>
+    </span>
+  `;
+  Object.assign(box.style, {
+    background: '#fafdff',
+    color: '#1e293b',
+    borderLeft: '4px solid #D32F2F', // Thinner border, new color
+    borderRadius: '12px', // Slightly less rounded
+    padding: '1.1rem 2.2rem',
+    fontSize: '1.09rem',
+    fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Softer, cleaner shadow
+    zIndex: 10,
+    textAlign: 'left',
+    minWidth: '270px',
+    letterSpacing: '0.5px',
+    display: 'block',
+    opacity: '1',
+    margin: '0', /* Adjusted for fixed positioning */
+    maxWidth: '400px',
+    position: 'fixed', /* Changed to fixed for top-left */
+    bottom: '20px',    /* Position from bottom viewport edge */
+    left: '20px',      /* Position from left viewport edge */
+    transform: 'translateY(50px)', /* Initial position below final, for slide-up animation */
+    transition: 'opacity 0.4s, transform 0.4s'
+  });
+  // Animate in
+  setTimeout(() => {
+    box.style.transform = 'translateY(0)'; /* Slide up to final position */
+    const icon = box.querySelector('.msg-animate');
+    if (icon) icon.style.transform = 'scale(1.15)'; // Gentle pulse animation
+    setTimeout(() => {
+      if (icon) icon.style.transform = 'scale(1)';
+    }, 200); // Quicker pulse
+  }, 10);
+  // Animate out
+  setTimeout(() => {
+    box.style.opacity = '0';
+    box.style.transform = 'translateY(50px)'; /* Slide down on exit */
+    setTimeout(() => { box.style.display = 'none'; box.style.opacity = '1'; }, 400);
+  }, 2200);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+:root {
+    --primary-color: #4a90e2;
+    --primary-hover-color: #3a7bc8;
+    --light-bg-color: #f4f4f4; /* Existing body background */
+    --card-bg-color: #ffffff; /* Background for boxes */
+    --dark-text-color: #343a40;
+    --light-text-color: #ffffff;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-hover-color: rgba(0, 0, 0, 0.15);
+    --border-radius: 6px; /* Consistent border radius */
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* Tabs Navigation */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: #4a90e2;
+    color: #fff;
+    width: 100%;
+}
+
+.tab {
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.tab:hover {
+    background-color: #3a7bc8;
+}
+
+.tab.active {
+    background-color: #3a7bc8;
+    border-bottom: 3px solid #f4f4f4;
+}
+
+/* Main Container */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+/* --- Main Content Area --- */
+h2 { color: #333; }
+
+
+.header {
+    width: 100%;
+    text-align: center;
+    margin-top: 23px; 
+    margin-bottom: 39px; 
+    color: var(--primary-color); 
+}
+.header h1 {
+    font-weight: 600;
+    font-size: 1.8em; 
+}
+
+.user-info {
+    margin-bottom: 50px; 
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.stats {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    gap: 15px; 
+    width: 100%;
+    margin-bottom: 30px; 
+}
+
+.stat-box {
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius);
+    padding: 20px 15px; /* Adjusted padding */
+    box-shadow: 0 2px 4px var(--shadow-color);
+    text-align: center;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+.stat-box:hover {
+    transform: translateY(-3px); /* Subtle lift effect */
+    box-shadow: 0 4px 8px var(--shadow-hover-color);
+}
+
+.stat-box h3 {
+    margin: 0 0 5px 0;
+    font-size: 2em;
+    color: var(--primary-color);
+}
+
+.stat-box p {
+    margin: 0;
+    color: #6c757d; /* Muted text color */
+    font-size: 0.95em;
+}
+
+/* --- Action Buttons Box --- */
+.box {
+    border: none;
+    padding: 20px; /* Consistent padding */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    justify-content: center; /* Center buttons */
+    gap: 15px; /* Space between buttons */
+    align-items: center;
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius); /* Use variable */
+    box-shadow: 0 4px 8px var(--shadow-color);
+    margin-bottom: 30px; /* Increased margin */
+    box-sizing: border-box;
+}
+
+.box button {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius); 
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    font-size: 0.95rem;
+}
+
+.box button:hover {
+    background-color: var(--primary-hover-color);
+    transform: translateY(-2px); 
+}
+
+
+.button {
+    text-decoration: none;
+    color: inherit; 
+    display: inline-flex; 
+    align-items: center;
+    gap: 5px;
+}
+
+/* --- Recent Activity Section --- */
+.recent-activity {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.recent-activity:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.recent-activity h2 {
+    font-size: 1.6em;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 12px;
+}
+
+.activity-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 0.95em;
+    color: #555;
+    transition: background-color 0.2s ease;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item:hover {
+    background-color: #f8fafc;
+}
+
+.activity-type {
+    color: #3498db;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.activity-details {
+    flex-grow: 1;
+}
+
+.activity-timestamp {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    font-style: normal;
+    min-width: 120px;
+    text-align: right;
+}
+
+/* Icons */
+.activity-icon {
+    margin-right: 12px;
+    color: #3498db;
+    font-size: 1.1em;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .recent-activity {
+        padding: 18px;
+        margin-top: 20px;
+    }
+    
+    .activity-item {
+        flex-wrap: wrap;
+        padding: 10px 0;
+    }
+    
+    .activity-details {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .activity-timestamp {
+        text-align: left;
+        width: 100%;
+    }
+}
+
+@media (min-width: 600px) {
+    .content {
+        padding: 20px;
+        width: calc(100% - 40px);
+    }
+    .tab {
+        font-size: 1rem;
+    }
+    .header h1 {
+        font-size: 2em;
+    }
+    .box {
+        justify-content: space-around; 
+    }
+}
+
+@media (max-width: 480px) {
+    .content {
+        padding: 10px;
+        width: calc(100% - 20px);
+        margin: 10px auto;
+    }
+    .tab {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+    }
+    .tab i {
+        margin-right: 4px;
+    }
+    .header h1 {
+        font-size: 1.5em;
+    }
+    .user-info {
+        font-size: 1em;
+    }
+    .stats {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .stat-box {
+        padding: 15px 10px;
+    }
+    .stat-box h3 {
+        font-size: 1.8em;
+    }
+    .box {
+        padding: 15px;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .box button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        width: calc(50% - 10px); 
+        box-sizing: border-box;
+    }
+    .recent-activity {
+        padding: 15px;
+    }
+    .recent-activity h2 {
+        font-size: 1.2em;
+    }
+}

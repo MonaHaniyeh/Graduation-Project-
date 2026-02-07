@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Rooms</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Rooms.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="tabs">
+        <a href="Home.php" class="tab"><i class="fas fa-home"></i> Home</a>
+        <a href="department-Heads.html" class="tab"><i class="fas fa-users"></i> Departments</a>
+        <a href="#" class="tab active"><i class="fas fa-door-open"></i> Rooms</a>
+        <a href="Courses.html" class="tab"><i class="fas fa-book"></i> Courses</a>
+        <a href="loginpage.html" class="tab"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="faculty-menu">
+            <label for="faculty">Select Faculty:</label>
+            <select id="faculty" name="faculty">
+                <option value="it" selected>Information Technology</option>
+                <option value="AI">Artificial Intelligence</option>
+                <option value="Eng">Engineering</option>
+            </select>
+        </div>
+
+        <div class="add-room-section">
+            <button id="showAddForm" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Add New Room
+            </button>
+        </div>
+
+        <!-- Add Room Form -->
+        <form action="Rooms.php" method="post" id="addRoomForm" style="display:none;">
+            <fieldset>
+                <legend>Add New Room</legend>
+                <div>
+                    <label for="formRoomNumber">Room Number:</label>
+                    <input type="text" id="formRoomNumber" name="roomNumber" required>
+                </div>
+                <div>
+                    <label for="formRoomType">Room Type:</label>
+                    <input type="text" id="formRoomType" name="roomType" required>
+                </div>
+                <div>
+                    <label for="formCapacity">Capacity:</label>
+                    <input type="number" id="formCapacity" name="capacity" required min="1">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Room</button>
+            </fieldset>
+        </form>
+
+        <!-- Update Room Form -->
+        <form action="Rooms.php" method="post" id="updateRoomForm" style="display:none;">
+            <fieldset>
+                <legend>Update Room</legend>
+                <div>
+                    <label for="updateRoomNumber">Room Number:</label>
+                    <input type="text" id="updateRoomNumber" name="roomNumber" readonly>
+                </div>
+                <div>
+                    <label for="updateRoomType">Room Type:</label>
+                    <input type="text" id="updateRoomType" name="roomType" required>
+                </div>
+                <div>
+                    <label for="updateCapacity">Capacity:</label>
+                    <input type="number" id="updateCapacity" name="capacity" required min="1">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Room</button>
+            </fieldset>
+        </form>
+
+        <div id="roomMessage" style="margin-top:10px; padding:10px; border-radius:5px;"></div>
+
+        <table id="roomTable">
+            <thead>
+                <tr>
+                    <th>Room Number</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Room data dynamically added here -->
+                <tr>
+                    <td>Room Number</td>
+                    <td>Type</td>
+                    <td>Capacity</td>
+                    <td>
+                        <button class="btn btn-danger delete-button"><i class="fas fa-trash-alt"></i> Delete</button>
+                        <button class="btn btn-primary update-button" onclick="updateRoom('Room Number')"><i
+                                class="fas fa-edit"></i> Update</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Custom Modal Structure (Initially Hidden) -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage" class="modal-message">Modal Message Goes Here</p>
+            <div id="modalButtons" class="modal-buttons">
+                <!-- Buttons will be added dynamically here -->
+            </div>
+        </div>
+    </div>
+</body>
+<!-- Scripts -->
+<script>
+    const showAddFormButton = document.getElementById('showAddForm');
+    const addRoomForm = document.getElementById('addRoomForm'); // New form
+    const roomMessageDiv = document.getElementById('roomMessage'); // For feedback
+    const roomTableBody = document.querySelector('#roomTable tbody');
+    const facultySelect = document.getElementById('faculty');
+    const modalOverlay = document.getElementById('customModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalButtons = document.getElementById('modalButtons');
+
+    const ROOMS_STORAGE_KEY = 'rooms';
+
+    let modalConfirmCallback = null;
+    let modalCancelCallback = null;
+
+    function getRoomsFromStorage() {
+        const roomsJson = localStorage.getItem(ROOMS_STORAGE_KEY);
+        try {
+            return roomsJson ? JSON.parse(roomsJson) : [];
+        } catch (e) {
+            console.error("Error parsing rooms from localStorage:", e);
+            return [];
+        }
+    }
+
+    function saveRoomsToStorage(rooms) {
+        try {
+            localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(rooms));
+        } catch (e) {
+            console.error("Error saving rooms to localStorage:", e);
+            showModal("Could not save rooms. LocalStorage might be full or disabled.", 'alert');
+        }
+    }
+
+    function displayRooms() {
+        const rooms = getRoomsFromStorage();
+        roomTableBody.innerHTML = ''; // Clear existing rows
+
+        if (rooms.length === 0) {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 4; // Updated colspan
+            cell.textContent = 'No rooms added yet.';
+            cell.style.textAlign = 'center';
+            cell.style.fontStyle = 'italic';
+            cell.style.color = '#6c757d';
+            row.appendChild(cell);
+            roomTableBody.appendChild(row);
+        } else {
+            rooms.forEach((room) => {
+                const row = roomTableBody.insertRow();
+                const nameCell = row.insertCell();
+                const typeCell = row.insertCell();
+                const capacityCell = row.insertCell();
+                const actionsCell = row.insertCell();
+
+                nameCell.textContent = room.number || 'N/A';
+                typeCell.textContent = room.type || 'N/A';
+                capacityCell.textContent = room.capacity || 'N/A';
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+                deleteButton.classList.add('btn', 'btn-danger', 'delete-button');
+                deleteButton.addEventListener('click', () => deleteRoom(room.number));
+                actionsCell.appendChild(deleteButton);
+
+                const updateButton = document.createElement('button');
+                updateButton.innerHTML = '<i class="fas fa-edit"></i> Update';
+                updateButton.classList.add('btn', 'btn-warning', 'update-button');
+                updateButton.addEventListener('click', () => updateRoom(room.number));
+                actionsCell.appendChild(updateButton);
+            });
+        }
+    }
+
+    function deleteRoom(roomNumber) {
+        if (!roomNumber) {
+            showModal('Invalid room number. Please try again.', 'alert');
+            return;
+        }
+
+        showModal(
+            `Are you sure you want to delete room "${roomNumber}"? This action cannot be undone.`,
+            'confirm',
+            () => {
+                // Send the delete request to the backend
+                fetch('Rooms.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=delete&roomNumber=${encodeURIComponent(roomNumber)}`,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            showModal(data.message, 'success');
+
+                            // Fetch the updated data from the backend
+                            fetch('Rooms.php', {
+                                method: 'GET',
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        saveRoomsToStorage(data.data); // Update localStorage
+                                        displayRooms(); // Refresh the table
+                                    } else {
+                                        showModal('Failed to fetch updated data.', 'alert');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching updated data:', error);
+                                    showModal('An error occurred while fetching updated data.', 'alert');
+                                });
+                        } else {
+                            showModal(data.message, 'alert');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting room:', error);
+                        showModal('An error occurred while deleting the room.', 'alert');
+                    });
+            },
+            () => {
+                console.log('Deletion cancelled by user.');
+            }
+        );
+    }
+
+    // Event listener for the "Add New Room" button
+    showAddFormButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const updateRoomForm = document.getElementById('updateRoomForm');
+        const isAddFormVisible = addRoomForm.style.display === 'block';
+        const isUpdateFormVisible = updateRoomForm.style.display === 'block';
+
+        if (isUpdateFormVisible) {
+            // If update form is visible, button acts as "Cancel Update"
+            updateRoomForm.style.display = 'none';
+            updateRoomForm.reset();
+            showAddFormButton.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Room';
+            addRoomForm.style.display = 'none'; // Ensure add form is also hidden
+
+        } else if (isAddFormVisible) {
+            // If add form is visible, button acts as "Cancel Add"
+            addRoomForm.style.display = 'none';
+            showAddFormButton.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Room';
+            addRoomForm.reset(); // Reset the form fields
+        } else {
+            // If no form is visible, button acts as "Add New Room"
+            addRoomForm.style.display = 'block';
+            addRoomForm.reset(); // Reset before showing
+            updateRoomForm.style.display = 'none'; // Ensure update form is hidden
+            showAddFormButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
+
+            // Update the form for adding a new room
+            const formLegend = addRoomForm.querySelector('legend');
+            formLegend.textContent = 'Add New Room'; // Change the legend text
+            const submitButton = addRoomForm.querySelector('button[type="submit"]');
+            submitButton.textContent = 'Add Room'; // Change button text to "Add Room"
+
+            // Note: The following onclick re-assignment is generally an anti-pattern.
+            // A persistent event listener on the form's submit event is preferred.
+            // Remove any previous event listeners to avoid duplicate handlers
+            submitButton.onclick = null;
+
+            // Add a new event listener for adding a room
+            submitButton.onclick = function (e) {
+                e.preventDefault();
+
+                const newRoom = {
+                    number: document.getElementById('formRoomNumber').value,
+                    type: document.getElementById('formRoomType').value,
+                    capacity: document.getElementById('formCapacity').value,
+                };
+
+                console.log('Data being sent:', newRoom);
+
+                if (!newRoom.number || !newRoom.type || !newRoom.capacity) {
+                    showModal('All fields are required.', 'alert');
+                    return;
+                }
+
+                // Send the new room data to the backend
+                fetch('Rooms.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=add&roomNumber=${encodeURIComponent(newRoom.number)}&roomType=${encodeURIComponent(newRoom.type)}&capacity=${encodeURIComponent(newRoom.capacity)}`,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response from server:', data); // Log the server response
+                        if (data.success) {
+                            showModal(data.message, 'success');
+
+                            // Fetch the updated data from the backend
+                            fetch('Rooms.php', {
+                                method: 'GET',
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        // Update localStorage with the latest data
+                                        saveRoomsToStorage(data.data);
+
+                                        // Refresh the table to reflect the latest data
+                                        displayRooms();
+                                    } else {
+                                        showModal('Failed to fetch updated data.', 'alert');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching updated data:', error);
+                                    showModal('An error occurred while fetching updated data.', 'alert');
+                                });
+
+                            addRoomForm.style.display = 'none';
+                            // Reset the main button to "Add New Room"
+                            showAddFormButton.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Room';
+                        } else {
+                            showModal(data.message, 'alert'); // Display the exact error message
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding room:', error);
+                        showModal('An error occurred while adding the room.', 'alert');
+                    });
+            };
+        }
+    });
+
+    // Function to handle updating a room
+    function updateRoom(roomNumber) {
+        const rooms = getRoomsFromStorage();
+        const roomToUpdate = rooms.find(room => room.number === roomNumber);
+
+        if (!roomToUpdate) {
+            showModal('Room not found for update.', 'alert');
+            return;
+        }
+
+        // Populate the form with the room's current data
+        document.getElementById('updateRoomNumber').value = roomToUpdate.number;
+        document.getElementById('updateRoomType').value = roomToUpdate.type;
+        document.getElementById('updateCapacity').value = roomToUpdate.capacity;
+
+        // Show the update form and hide the add form
+        addRoomForm.style.display = 'none';
+        addRoomForm.reset(); // Reset add form if it was open
+        document.getElementById('updateRoomForm').style.display = 'block';
+
+        // Configure the main button to act as "Cancel" for the update
+        showAddFormButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
+        showAddFormButton.style.display = 'inline-block'; // Ensure it's visible
+
+        // Update the legend text to "Update Room"
+        const formLegend = document.getElementById('updateRoomForm').querySelector('legend');
+        formLegend.textContent = 'Update Room';
+
+        const submitButton = document.getElementById('updateRoomForm').querySelector('button[type="submit"]');
+        submitButton.textContent = 'Update Room'; // Change button text to "Update Room"
+
+        // Remove any previous event listeners to avoid duplicate handlers
+        submitButton.onclick = null;
+
+        // Add an event listener for the update action
+        submitButton.onclick = function (e) {
+            e.preventDefault();
+
+            const updatedRoom = {
+                number: document.getElementById('updateRoomNumber').value,
+                type: document.getElementById('updateRoomType').value,
+                capacity: document.getElementById('updateCapacity').value,
+            };
+
+            if (!updatedRoom.number || !updatedRoom.type || !updatedRoom.capacity) {
+                showModal('All fields are required.', 'alert');
+                return;
+            }
+
+            // Send the updated room data to the backend
+            fetch('Rooms.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=update&roomNumber=${encodeURIComponent(updatedRoom.number)}&roomType=${encodeURIComponent(updatedRoom.type)}&capacity=${encodeURIComponent(updatedRoom.capacity)}`,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showModal(data.message, 'success');
+
+                        // Fetch the updated data from the backend
+                        fetch('Rooms.php', {
+                            method: 'GET',
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    saveRoomsToStorage(data.data); // Update localStorage
+                                    displayRooms(); // Refresh the table
+                                } else {
+                                    showModal('Failed to fetch updated data.', 'alert');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching updated data:', error);
+                                showModal('An error occurred while fetching updated data.', 'alert');
+                            });
+
+                        document.getElementById('updateRoomForm').style.display = 'none';
+                        // Reset the main button to "Add New Room"
+                        showAddFormButton.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Room';
+                    } else {
+                        showModal(data.message, 'alert');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating room:', error);
+                    showModal('An error occurred while updating the room.', 'alert');
+                });
+        };
+    }
+
+    function showModal(message, type = 'alert', confirmCb = null, cancelCb = null) {
+        modalMessage.textContent = message;
+        modalButtons.innerHTML = '';
+        modalConfirmCallback = confirmCb;
+        modalCancelCallback = cancelCb;
+
+        if (type === 'confirm') {
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = 'Confirm';
+            confirmBtn.classList.add('btn', 'btn-danger');
+            confirmBtn.addEventListener('click', () => {
+                if (modalConfirmCallback) modalConfirmCallback();
+                hideModal();
+            });
+            modalButtons.appendChild(confirmBtn);
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.classList.add('btn', 'btn-secondary');
+            cancelBtn.addEventListener('click', hideModal);
+            modalButtons.appendChild(cancelBtn);
+        } else {
+            const okBtn = document.createElement('button');
+            okBtn.textContent = 'OK';
+            okBtn.classList.add(type === 'success' ? 'btn-success' : 'btn-primary', 'btn');
+            okBtn.addEventListener('click', hideModal);
+            modalButtons.appendChild(okBtn);
+        }
+
+        modalOverlay.classList.add('visible');
+    }
+
+    function hideModal() {
+        modalOverlay.classList.remove('visible');
+        modalConfirmCallback = null;
+        modalCancelCallback = null;
+    }
+
+    document.addEventListener('DOMContentLoaded', displayRooms);
+</script>
+
+</html>

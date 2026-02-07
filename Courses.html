@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="Courses.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <title>Courses</title>
+</head>
+
+<body>
+  <div class="tabs">
+    <a href="home.php" class="tab"><i class="fas fa-home"></i> Home</a>
+    <a href="department-Heads.html" class="tab"><i class="fas fa-users"></i> Departments</a>
+    <a href="Rooms.html" class="tab"><i class="fas fa-door-open"></i> Rooms</a>
+    <a href="#" class="tab active"><i class="fas fa-book"></i> Courses</a>
+    <a href="login.php" class="tab"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <div class="content-wrapper">
+    <form action="Courses.php" method="post" id="addCourseForm">
+      <fieldset>
+        <input type="hidden" name="action" value="add"> <!-- Specify the action -->
+        <legend><i class="fas fa-plus-circle"></i> Add New Course</legend>
+
+        <label for="courseName">Course Name:</label>
+        <input type="text" id="courseName" name="courseName" required autocomplete="on" />
+        <div id="courseNameError" class="error"></div>
+
+        <label for="courseNumber">Course Number:</label>
+        <input type="text" id="courseNumber" name="courseNumber" required autocomplete="on" placeholder="e.g., 101" />
+        <div id="courseNumberError" class="error"></div>
+
+        <label for="subjectLevel">Subject Level:</label>
+        <input type="text" id="subjectLevel" name="subjectLevel" required autocomplete="on"
+          placeholder="e.g., Bachelor, Master" />
+        <div id="subjectLevelError" class="error"></div>
+
+        <label for="department">Department:</label>
+        <select id="department" name="department" required>
+          <option value="" disabled selected>-- Select Department --</option>
+          <option value="1">Software Engineering</option>
+          <option value="2">Computer Science</option>
+          <option value="3">Computer Information Systems</option>
+        </select>
+        <div id="departmentError" class="error"></div>
+
+        <label for="level">Level:</label>
+        <select id="level" name="level" required>
+          <option value="" disabled selected>-- Select Level--</option>
+          <option value="Undergraduate">Undergraduate</option>
+          <option value="Graduate">Graduate</option>
+          <option value="Doctoral">Doctoral</option>
+        </select>
+        <div id="levelError" class="error"></div>
+
+        <label for="hours">CreditHours:</label>
+        <select id="hours" name="hours" required>
+          <option value="" disabled selected>-- Select CreditHours --</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="6">6</option>
+        </select>
+        <div id="hoursError" class="error"></div>
+        <input type="submit" value="Add" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">
+      </fieldset>
+    </form>
+  </div>
+
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-content">
+      <p id="modalMessage" class="modal-message">Modal Message Goes Here</p>
+      <div id="modalButtons" class="modal-buttons">
+      </div>
+    </div>
+  </div>
+
+  <div id="messageBox" class="message-box" style="display: none;">
+    <div class="message-content">
+      <p id="messageText"></p>
+      <button id="closeMessageBox" class="close-button">Close</button>
+    </div>
+  </div>
+</body>
+
+</html>
+<script>
+  let courses = []; // Will be populated from DB or localStorage
+
+  // --- DOM Element References ---
+  const courseNameInput = document.getElementById("courseName");
+  const courseNumberInput = document.getElementById("courseNumber");
+  const courseLevelInput = document.getElementById("subjectLevel");
+  const departmentSelect = document.getElementById("department"); // Renamed for clarity
+  const levelSelect = document.getElementById("level"); // Added reference
+  const hoursSelect = document.getElementById("hours"); // Added reference
+  const courseNameError = document.getElementById("courseNameError");
+  const courseNumberError = document.getElementById("courseNumberError");
+  const courseLevelError = document.getElementById("subjectLevelError");
+  const levelError = document.getElementById("levelError"); // Added reference
+  const hoursError = document.getElementById("hoursError"); // Added reference
+  const departmentError = document.getElementById("departmentError");
+  const addCourseForm = document.getElementById("addCourseForm");
+
+  // --- Modal Element References (Copied from Rooms.html) ---
+  const modalOverlay = document.getElementById('customModal');
+  const modalMessage = document.getElementById('modalMessage');
+  const modalButtons = document.getElementById('modalButtons');
+
+  // --- Global modal callback variables (will be removed as confirm/cancel not used here) ---
+  // let modalConfirmCallback = null; // To be removed
+  // let modalCancelCallback = null; // To be removed
+
+  // --- Validation Functions ---
+
+  // Checks if a course with the same name AND level already exists
+  function validateCourseNameUnique(name, level) {
+    return !courses.some(
+      (course) => course.name.toLowerCase() === name.toLowerCase() && course.level.toLowerCase() === level.toLowerCase()
+    );
+  }
+
+  // Checks if a course with the same number already exists
+  function validateCourseNumberUnique(number) {
+    // Ensure number is treated as integer for comparison
+    const numInt = parseInt(number, 10);
+    if (isNaN(numInt)) return true; // Let other validation catch non-numbers
+    return !courses.some((course) => course.number === numInt);
+  }
+
+  // Checks if a string represents a positive integer
+  function isPositiveIntegerString(str) {
+    if (typeof str !== 'string' || str.trim() === '') {
+      return false;
+    }
+    const num = Number(str);
+    // Check if it's an integer, finite, and greater than 0
+    return Number.isInteger(num) && Number.isFinite(num) && num > 0;
+  }
+
+  // Validates all required fields are filled
+  function validateRequiredFields() {
+    clearErrors(); // Clear previous errors first
+    let isValid = true;
+
+    if (courseNameInput.value.trim() === "") {
+      courseNameError.textContent = "Course name is required.";
+      isValid = false;
+    }
+
+    if (courseNumberInput.value.trim() === "") {
+      courseNumberError.textContent = "Course number is required.";
+      isValid = false;
+    }
+
+    if (courseLevelInput.value.trim() === "") {
+      courseLevelError.textContent = "Subject level is required.";
+      isValid = false;
+    }
+    if (departmentSelect.value === "") {
+      departmentError.textContent = "Please select a department.";
+      isValid = false;
+    }
+    if (levelSelect.value === "") { // Added check for Level
+      levelError.textContent = "Please select a level.";
+      isValid = false;
+    }
+    if (hoursSelect.value === "") { // Added check for CreditHours
+      hoursError.textContent = "Please select credit hours.";
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  // --- Utility Functions ---
+
+  function clearErrors() {
+    courseNameError.textContent = "";
+    courseNumberError.textContent = "";
+    courseLevelError.textContent = "";
+    levelError.textContent = ""; // Added clearing
+    hoursError.textContent = ""; // Added clearing
+    departmentError.textContent = "";
+  }
+
+  function clearForm() {
+    addCourseForm.reset(); // Resets form to default values
+    clearErrors();
+    courseNameInput.focus(); // Focus on the first input after clearing
+  }
+
+  function saveCoursesToLocalStorage() {
+    try {
+      localStorage.setItem('courses', JSON.stringify(courses));
+    } catch (e) {
+      console.error("Error saving courses to localStorage:", e);
+      showModal("Could not save course data. LocalStorage might be full or disabled.", 'alert'); // Use modal for error
+    }
+  }
+
+  // --- Custom Modal Functions (Copied from Rooms.html, removed warning type) ---
+
+  /**
+   * Shows the custom modal dialog.
+   * @param {string} message - The message to display.
+   * @param {'alert'|'success'} type - Type of modal ('alert', 'success').
+   */
+  function showModal(message, type = 'alert') {
+    modalMessage.textContent = message;
+    modalButtons.innerHTML = ''; // Clear previous buttons
+    // modalConfirmCallback and modalCancelCallback are no longer needed here.
+
+    // 'alert', 'success' types
+    const okBtn = document.createElement('button');
+    okBtn.textContent = 'OK';
+    // Style 'OK' button based on type
+    if (type === 'success') {
+      okBtn.classList.add('btn', 'btn-success');
+    } else { // Default alert
+      okBtn.classList.add('btn', 'btn-primary');
+    }
+    okBtn.addEventListener('click', hideModal); // OK just closes the modal
+    modalButtons.appendChild(okBtn);
+
+    // Show the modal
+    modalOverlay.classList.add('visible');
+  }
+
+  function hideModal() {
+    modalOverlay.classList.remove('visible');
+  }
+
+  function showMessageBox(message) {
+    const messageBox = document.getElementById('messageBox');
+    const messageText = document.getElementById('messageText');
+    const closeButton = document.getElementById('closeMessageBox');
+
+    // Set the message text
+    messageText.textContent = message;
+
+    // Show the message box
+    messageBox.style.display = 'flex';
+
+    // Add event listener to close the message box
+    closeButton.onclick = () => {
+      messageBox.style.display = 'none';
+    };
+  }
+
+  // --- Event Listeners ---
+
+  // Save Button Logic
+  addCourseForm.addEventListener("submit", (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(addCourseForm);
+
+    // Log form data for debugging
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`); // Log each field and its value
+    }
+
+    // Submit the form data to the backend
+    fetch('Courses.php', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          showMessageBox(data.message); // Use custom message box
+          addCourseForm.reset(); // Clear the form on success
+        } else {
+          showMessageBox(data.message); // Use custom message box
+        }
+      })
+      .catch(error => {
+        console.error('Error submitting form:', error);
+        showMessageBox('Failed to submit the course. Please try again.');
+      });
+  });
+
+
+  // --- Modal Close Event Listeners (Copied from Rooms.html) ---
+  modalOverlay.addEventListener('click', (event) => {
+    if (event.target === modalOverlay) {
+      hideModal();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modalOverlay.classList.contains('visible')) {
+      hideModal();
+    }
+  });
+
+  // --- Initial Setup ---
+  // (Optional: Load data or perform other setup on page load)
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Try to load courses from server first
+    try {
+      const response = await fetch('Courses.php', { method: 'GET' });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const serverResponse = await response.json();
+      if (serverResponse.status === 'success' && Array.isArray(serverResponse.data)) {
+        courses = serverResponse.data;
+        saveCoursesToLocalStorage(); // Save the fresh list to localStorage
+        console.log("Courses loaded from database:", courses);
+      } else {
+        console.warn("Could not load courses from server, trying localStorage. Server message:", serverResponse.message);
+        // Fallback to localStorage if server fetch fails or returns unexpected data
+        const storedCourses = localStorage.getItem('courses');
+        courses = storedCourses ? JSON.parse(storedCourses) : [];
+        console.log("Courses loaded from localStorage (fallback):", courses);
+      }
+    } catch (error) {
+      console.error("Error fetching courses from server, falling back to localStorage:", error);
+      // Fallback to localStorage on network error or other fetch issues
+      const storedCourses = localStorage.getItem('courses');
+      courses = storedCourses ? JSON.parse(storedCourses) : [];
+      console.log("Courses loaded from localStorage (error fallback):", courses);
+    }
+
+    courseNameInput.focus(); // Focus on the first field on load
+  });
+
+  function fetchDepartments() {
+    fetch('Courses.php?fetchDepartments=true')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        const departmentSelect = document.getElementById('department');
+        if (data.status === 'success' && data.data.length > 0) {
+          data.data.forEach(department => {
+            const option = document.createElement('option');
+            option.value = department.DepartmentID;
+            option.textContent = department.DepartmentName;
+            departmentSelect.appendChild(option);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching departments:', error);
+        showMessageBox('An error occurred while fetching departments. Please check your connection.');
+      });
+  }
+
+  // Call this function on page load
+  document.addEventListener('DOMContentLoaded', fetchDepartments);
+
+</script>

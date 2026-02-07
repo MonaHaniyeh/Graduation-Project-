@@ -1,0 +1,403 @@
+
+:root {
+    --primary-color: #4a90e2;
+    --primary-hover-color: #3a7bc8;
+    --danger-color: #dc3545; /* Kept for potential future use */
+    --danger-hover-color: #c82333; /* Kept for potential future use */
+    --success-color: #28a745;
+    --success-hover-color: #218838;
+    --light-bg-color: #f8f9fa; /* Changed body bg slightly */
+    --dark-text-color: #343a40;
+    --light-text-color: #ffffff;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --modal-overlay-color: rgba(0, 0, 0, 0.5);
+    --border-radius: 6px;
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* Tabs Navigation */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: #4a90e2;
+    color: #fff;
+    width: 100%;
+}
+
+.tab {
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.tab:hover {
+    background-color: #3a7bc8;
+}
+
+.tab.active {
+    background-color: #3a7bc8;
+    border-bottom: 3px solid #f4f4f4;
+}
+
+/* Main Container */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Main Content Area --- */
+ .content-wrapper { /* Added wrapper like in Rooms.html */
+    max-width: 900px;
+    margin: 20px auto; /* Reduced top/bottom margin slightly */
+    padding: 15px; /* Default padding */
+    background-color: var(--light-text-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    width: calc(100% - 30px); /* Ensure padding is accounted for */
+    box-sizing: border-box;
+}
+
+/* --- Course Form Styling --- */
+#addCourseForm {
+  background-color: var(--light-text-color); /* Use variable */
+  border-radius: var(--border-radius); /* Use variable */
+  /* Removed box-shadow, handled by wrapper */
+  padding: 20px; /* Default padding */
+  width: 100%; /* Take full width within wrapper */
+  max-width: 600px; /* Limit form width */
+  margin: 0 auto; /* Center form within wrapper */
+  box-sizing: border-box; /* Include padding in width */
+}
+
+#addCourseForm fieldset { /* Style fieldset */
+    border: 1px solid var(--border-color);
+    padding: 15px; /* Default padding */
+    border-radius: var(--border-radius);
+}
+
+#addCourseForm legend {
+  font-size: 1.3em; /* Adjusted size */
+  font-weight: 600; /* Slightly bolder */
+  color: var(--primary-color); /* Use variable */
+  margin-bottom: 20px; /* Adjusted margin */
+  text-align: center;
+  width: 100%;
+  padding-bottom: 10px; /* Add some space below legend */
+  border-bottom: 1px solid var(--border-color); /* Separator line */
+}
+
+#addCourseForm label {
+  display: block;
+  margin-bottom: 6px; /* Adjusted margin */
+  font-weight: 600; /* Slightly bolder */
+  color: var(--dark-text-color); /* Use variable */
+  font-size: 0.95rem; /* Adjusted size */
+}
+
+#addCourseForm input[type="text"],
+#addCourseForm input[type="number"],
+#addCourseForm select {
+  width: 100%;
+  padding: 8px 10px; /* Adjusted padding */
+  margin-bottom: 5px; /* Reduced margin */
+  border: 1px solid var(--border-color); /* Use variable */
+  border-radius: var(--border-radius); /* Use variable */
+  box-sizing: border-box;
+  font-size: 0.95rem; /* Consistent font size */
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; /* Add transitions */
+}
+/* Add focus styles */
+#addCourseForm input[type="text"]:focus,
+#addCourseForm input[type="number"]:focus,
+#addCourseForm select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+}
+
+/* Style select dropdown arrow */
+#addCourseForm select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23333' d='M1.41 0L6 4.58L10.59 0L12 1.41L6 7.41L0 1.41L1.41 0Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-color: var(--light-text-color);
+    cursor: pointer;
+}
+
+.error {
+  color: var(--danger-color); /* Use variable */
+  margin-top: 3px; /* Space above error */
+  margin-bottom: 12px; /* Adjusted space below error */
+  font-size: 0.8em; /* Slightly smaller error text */
+  min-height: 1.1em; /* Reserve space even when empty */
+}
+
+/* --- Button Styling (Using .btn classes like Rooms.html) --- */
+.btn {
+    padding: 8px 16px; /* Adjusted padding */
+    font-size: 0.95rem; /* Adjusted size */
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    color: var(--light-text-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.btn:hover {
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+     transform: translateY(-1px);
+}
+.btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+.btn-primary { background-color: var(--primary-color); }
+.btn-primary:hover { background-color: var(--primary-hover-color); }
+
+.btn-success { background-color: var(--success-color); }
+.btn-success:hover { background-color: var(--success-hover-color); }
+
+.btn-secondary { background-color: #6c757d; }
+.btn-secondary:hover { background-color: #5a6268; }
+
+.button-group {
+  display: flex;
+  justify-content: center; /* Center buttons on small screens */
+  flex-wrap: wrap; /* Allow buttons to wrap */
+  gap: 15px; /* Add gap between buttons */
+  width: 100%;
+  margin-top: 15px; /* Adjusted margin */
+  padding-top: 15px; /* Add space above buttons */
+  border-top: 1px solid var(--border-color); /* Separator line */
+}
+
+/* --- Custom Modal Styles (Copied from Rooms.html) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 10px; /* Add padding for small screens */
+    box-sizing: border-box;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--light-text-color);
+    padding: 20px; /* Adjusted padding */
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 100%; /* Take full width within overlay padding */
+    max-width: 450px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: scale(1);
+}
+
+.modal-message {
+    font-size: 1rem; /* Adjusted size */
+    margin-bottom: 20px; /* Adjusted margin */
+    color: var(--dark-text-color);
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    gap: 10px; /* Adjusted gap */
+}
+
+.modal-buttons .btn {
+    min-width: 90px; /* Adjusted min-width */
+    flex-grow: 1; /* Allow buttons to grow */
+    flex-basis: 100px; /* Base size before growing/shrinking */
+}
+
+/* --- Responsive Adjustments --- */
+
+/* Medium screens (Tablets) */
+@media (min-width: 600px) {
+    .tab {
+        font-size: 1rem; /* Restore tab font size */
+    }
+    .content-wrapper {
+        padding: 20px;
+        width: calc(100% - 40px);
+    }
+    #addCourseForm {
+        padding: 30px;
+    }
+    #addCourseForm fieldset {
+        padding: 20px;
+    }
+    #addCourseForm legend {
+        font-size: 1.5em;
+    }
+    #addCourseForm label {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+    #addCourseForm input[type="text"],
+    #addCourseForm input[type="number"],
+    #addCourseForm select {
+        padding: 10px 12px;
+        font-size: 1rem;
+    }
+    .error {
+        font-size: 0.85em;
+        margin-bottom: 15px;
+    }
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    .button-group {
+        justify-content: space-around; /* Space out buttons again */
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+    .modal-content {
+        padding: 30px;
+    }
+    .modal-message {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+    .modal-buttons {
+        gap: 15px;
+    }
+    .modal-buttons .btn {
+        min-width: 100px;
+        flex-grow: 0; /* Stop buttons from growing too much */
+    }
+}
+
+/* Small screens (Mobile) */
+@media (max-width: 480px) {
+    .tab {
+        padding: 12px 10px; /* Reduce tab padding */
+        font-size: 0.85rem; /* Further reduce tab font size */
+    }
+    .tab i {
+        margin-right: 4px; /* Reduce icon spacing */
+    }
+    .content-wrapper {
+        margin: 10px auto; /* Reduce margin */
+        padding: 10px;
+        width: calc(100% - 20px);
+        box-shadow: 0 2px 5px var(--shadow-color); /* Lighter shadow */
+    }
+    #addCourseForm {
+        padding: 15px;
+    }
+    #addCourseForm fieldset {
+        padding: 10px;
+    }
+    #addCourseForm legend {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+    #addCourseForm label {
+        font-size: 0.9rem;
+    }
+    #addCourseForm input[type="text"],
+    #addCourseForm input[type="number"],
+    #addCourseForm select {
+        font-size: 0.9rem;
+    }
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    .modal-content {
+        padding: 15px;
+    }
+    .modal-message {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+    .tabs .tab {
+        padding: 15px 20px; /* Adjust padding for smaller screens */
+    }
+}
+@media (max-width: 992px) { /* Adjust padding for medium screens */
+    .tabs .tab {
+        padding: 18px 40px; /* Reduced padding for medium screens */
+    }
+}
+/* Message Box Styles */
+.message-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.message-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.close-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background-color: #0056b3;
+}

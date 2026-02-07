@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="department-Heads.css">
+    <title>Departments</title>
+</head>
+
+<body>
+    <div class="tabs">
+        <a href="Home.php" class="tab"><i class="fas fa-home"></i>&nbsp; Home</a>
+        <a href="#" class="tab active"><i class="fas fa-users"></i>&nbsp; Departments</a>
+        <a href="Rooms.html" class="tab"><i class="fas fa-door-open"></i>&nbsp; Rooms</a>
+        <a href="Courses.html" class="tab"><i class="fas fa-book"></i>&nbsp; Courses</a>
+        <a href="loginpage.html" class="tab"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-user-tie"></i> Department Heads Management System</h1>
+            <button id="addBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Department Heads
+            </button>
+        </div>
+
+        <!-- Modal for Add/Edit -->
+        <div id="addModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-user-plus"></i> <span id="modalTitle">Add New Department Head</span></h3>
+                    <button id="closeModal" class="btn btn-secondary" style="padding: 0.5rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="departmentHeadForm" method="post" action="departmenthead.php">
+                        <input type="hidden" id="editId" value="">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="Fullname" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userId">Username</label>
+                            <input type="text" id="userId" name="userId" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="Password" class="form-control" required>
+                            <div class="invalid-feedback">Password must be at least 10 characters long</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department" class="form-control" name="department" required>
+                                <option value="Software Engineering">Software Engineering</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Computer Information Systems">Computer Information Systems</option>
+                                <option value="Computer Graphics">Computer Graphics</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                    <button id="saveBtn" class="btn btn-primary">Save Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteConfirmationModal" class="modal">
+            <div class="modal-content">
+                <div class="confirmation-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Are you sure you want to delete?</h3>
+                    <p>This action cannot be undone. All data will be permanently removed.</p>
+                </div>
+                <div class="confirmation-buttons">
+                    <button id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+                    <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Heads Table -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Last Access</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="headsTableBody">
+                        <!-- Will be filled with data -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="errorMessage" style="display: none;">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorText"></span>
+    </div>
+
+    <div id="successMessage" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <span id="successText"></span>
+    </div>
+
+    <div id="toastMessage" class="toast-message" hidden>
+        <div class="toast-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-content">
+            <span id="toastText"></span>
+        </div>
+        <div class="toast-progress"></div>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            const modal = document.getElementById('deleteConfirmationModal');
+            if (modal) {
+                modal.style.cssText = 'display: none !important;';
+                modal.className = '';
+            }
+        }, 100);
+        // Global variables
+        let departmentHeads = [];
+        let currentEditId = null;
+        let deleteId = null;
+
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('deleteConfirmationModal').style.display = 'none';
+            const deleteModal = document.getElementById('deleteConfirmationModal');
+            deleteModal.classList.remove('active');
+            deleteModal.style.display = 'none';
+
+            // Initialize modals and buttons
+            initModals();
+
+            // Fetch department heads data
+            fetchDepartmentHeads();
+            document.body.addEventListener('click', function (e) {
+                if (e.target.closest('.delete-btn')) {
+                    const id = e.target.closest('.delete-btn').getAttribute('data-id') ||
+                        e.target.closest('.delete-btn').getAttribute('onclick').match(/\d+/)[0];
+                    confirmDelete(id);
+                }
+            });
+
+        });
+
+        // Initialize modal functionality
+        function initModals() {
+            // Add button event
+            document.getElementById('addBtn').addEventListener('click', showAddModal);
+
+            // Close modal button
+            document.getElementById('closeModal').addEventListener('click', hideModal);
+
+            // Cancel button
+            document.getElementById('cancelBtn').addEventListener('click', hideModal);
+
+            // Save button
+            document.getElementById('saveBtn').addEventListener('click', handleFormSubmit);
+
+            // Delete confirmation buttons
+            document.getElementById('confirmDeleteBtn').addEventListener('click', handleDelete);
+            document.getElementById('cancelDeleteBtn').addEventListener('click', hideDeleteModal);
+
+            // Password validation
+            document.getElementById('password').addEventListener('input', validatePassword);
+
+            // Ensure delete modal is hidden on page load
+            hideDeleteModal();
+        }
+
+        // Show add modal
+        function showAddModal() {
+            currentEditId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Department Head';
+            document.getElementById('editId').value = '';
+            document.getElementById('departmentHeadForm').reset();
+            document.getElementById('password').required = true;
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        // Show edit modal
+        function showEditModal(head) {
+            currentEditId = head.id;
+            document.getElementById('modalTitle').textContent = 'Edit Department Head';
+            document.getElementById('editId').value = head.id;
+            document.getElementById('name').value = head.name;
+            document.getElementById('userId').value = head.user_id;
+            document.getElementById('department').value = head.department;
+            document.getElementById('password').required = false;
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        // Hide modal
+        function hideModal() {
+            document.getElementById('addModal').classList.remove('active');
+        }
+        function showDeleteConfirmation(id) {
+            console.log("عرض نافذة الحذف لـ ID:", id);
+            deleteId = id;
+            const modal = document.getElementById('deleteConfirmationModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
+
+        // Hide delete confirmation
+        function hideDeleteModal() {
+            const modal = document.getElementById('deleteConfirmationModal');
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+
+
+        // Fetch department heads from server
+        function fetchDepartmentHeads() {
+            fetch('departmenthead.php?action=get')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    if (html.includes('Invalid operation') || html.includes('Connection failed')) {
+                        throw new Error('Server returned an error');
+                    }
+                    document.getElementById('headsTableBody').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                });
+        }
+
+        // Validate password
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.value.length > 0 && passwordInput.value.length < 10) {
+                passwordInput.classList.add('is-invalid');
+                return false;
+            } else {
+                passwordInput.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+        // Handle form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            const formData = new FormData(document.getElementById('departmentHeadForm'));
+            const action = currentEditId ? 'update' : 'add';
+            formData.append('action', action);
+            if (currentEditId) {
+                formData.append('id', currentEditId);
+            }
+
+            fetch('departmenthead.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        fetchDepartmentHeads();
+                        hideModal();
+                        showToastMessage('Operation completed successfully');
+                    } else {
+                        showError(result);
+                    }
+                })
+                .catch(error => {
+                    showError('Error while saving data');
+                });
+        }
+
+        // Validate form
+        function validateForm() {
+            const password = document.getElementById('password').value;
+
+            if (!currentEditId && password.length < 10) {
+                showError('Password must be at least 10 characters long');
+                document.getElementById('password').classList.add('is-invalid');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            if (!errorElement) return;
+
+            const errorText = document.getElementById('errorText');
+            if (errorText) {
+                errorText.textContent = message;
+            }
+
+            errorElement.style.display = 'flex';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Toggle status
+        function toggleStatus(id) {
+            fetch(`departmenthead.php?action=toggle_status&id=${id}`)
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        fetchDepartmentHeads();
+                        showToastMessage('Status updated successfully');
+                    } else {
+                        showError('Error updating status');
+                    }
+                })
+                .catch(error => {
+                    showError('Error updating status');
+                });
+        }
+
+        // Edit head
+        function editHead(id, name, userId, department) {
+            currentEditId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Department Head';
+            document.getElementById('editId').value = id;
+            document.getElementById('name').value = name;
+            document.getElementById('userId').value = userId;
+            document.getElementById('department').value = department;
+            document.getElementById('password').required = false;
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        // Handle delete
+        function handleDelete() {
+            if (!deleteId) {
+                showError("No item has been specified for deletion.");
+                return;
+            }
+
+            console.log("Deleting item ID:", deleteId);
+
+            fetch(`departmenthead.php?action=delete&id=${deleteId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.text();
+                })
+                .then(result => {
+                    console.log("Result of deletion:", result);
+                    if (result.trim() === 'success') {
+                        showToastMessage('Deleted successfully');
+                        fetchDepartmentHeads();
+                    } else {
+                        throw new Error(result || 'Failed to delete');
+                    }
+                })
+                .catch(error => {
+                    console.error("Deletion error:", error);
+                    showError("An error occurred during deletion: " + error.message);
+                })
+                .finally(() => {
+                    hideDeleteModal();
+                });
+        }
+
+
+        function confirmDelete(id) {
+            console.log("Delete button clicked for ID:", id);
+            if (!id) {
+                console.error("No identifier was provided for deletion");
+                return;
+            }
+            showDeleteConfirmation(id);
+        }
+
+        // Show toast message
+        function showToastMessage(message, isError = false) {
+            const toast = document.getElementById('toastMessage');
+            const toastText = document.getElementById('toastText');
+
+            // Clear any existing timeout
+            if (toast.timeoutId) {
+                clearTimeout(toast.timeoutId);
+            }
+
+            // Set message and color
+            toastText.textContent = message;
+            toast.style.backgroundColor = isError ? '#f44336' : '#4CAF50';
+
+            // Show message
+            toast.removeAttribute('hidden');
+            setTimeout(() => {
+                toast.style.opacity = '1';
+            }, 10);
+
+            // Hide after 3 seconds
+            toast.timeoutId = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.setAttribute('hidden', 'true');
+                }, 500);
+            }, 3000);
+        }
+        console.log("حالة نافذة الحذف عند التحميل:", {
+            hasActiveClass: document.getElementById('deleteConfirmationModal').classList.contains('active'),
+            displayStyle: document.getElementById('deleteConfirmationModal').style.display
+        });
+
+    </script>
+</body>
+
+</html>
